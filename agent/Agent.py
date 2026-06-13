@@ -42,13 +42,19 @@ def run(messages: list):
         response = client.chat.completions.create(
             model=MODEL,
             messages=messages,
-            max_tokens=8000
+            max_tokens=8000,
+            stream=True
         )
-        message = response.choices[0].message
-        if not message.tool_calls:
-            messages.append(ai_msg(message.content))
-            print(f"AI>{message.content}")
-            break
+        parts = []
+        print("\nAI>", end="")
+        for chunk in response:
+            delta_content = chunk.choices[0].delta.content
+            if delta_content:
+                print(f"{delta_content}", end="", flush=True)
+                parts.append(delta_content)
+        print()
+        messages.append(ai_msg("".join(parts)))
+        break
 
 
 if __name__ == '__main__':
