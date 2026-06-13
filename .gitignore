@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+
+# 虚拟环境
+venv/
+.venv/
+env/
+.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# CodeArts
+.arts/
+.codeartsdoer/
+
+# 操作系统
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# 日志
+*.log
+
+# 环境变量与密钥
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# 测试与覆盖率
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
