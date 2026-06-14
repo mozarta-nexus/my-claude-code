@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "pozansky-news-server": {
+      "command": "uvx",
+      "args": [
+        "pozansky-news-server"
+      ]
+    }
+  }
+}

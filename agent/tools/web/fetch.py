@@ -27,7 +27,7 @@ class WebFetch(Tool):
         }
 
     def _print_call(self, **kwargs):
-        print(f"  {TAG}[{self.name}]{RESET} {kwargs.get('url', '')}")
+        print(f"{TAG}[{self.name}]{RESET} {kwargs.get('url', '')}")
 
     def execute(self, **kwargs) -> str:
         url = kwargs.get("url")

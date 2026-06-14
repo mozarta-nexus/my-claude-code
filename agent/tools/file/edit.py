@@ -26,7 +26,7 @@ class EditFile(FileTool):
         }
 
     def _print_call(self, **kwargs):
-        print(f"  {TAG}[{self.name}]{RESET} {kwargs.get('path', '')}")
+        print(f"{TAG}[{self.name}]{RESET} {kwargs.get('path', '')}")
 
     def execute(self, **kwargs) -> str:
         path = kwargs.get("path")

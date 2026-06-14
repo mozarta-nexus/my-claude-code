@@ -123,6 +123,6 @@ class TerminalTool(Tool):
 
 
 class CommandSafety(Enum):
-    BLOCKED = "blocked",
-    NEEDS_CONFIRM = "needs_confirm",
+    BLOCKED = "blocked"
+    NEEDS_CONFIRM = "needs_confirm"
     AUTO_APPROVE = "auto_approve"

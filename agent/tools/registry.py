@@ -16,10 +16,10 @@ class ToolRegistry:
     def get_all_tools(self) -> list[dict]:
         return [tool.get_schema() for tool in self.tools.values()]
 
-    def execute(self, name: str, **kwargs):
-        if name not in self.tools:
-            return f"Error: Tool '{name}' not found"
+    def execute(self, tool_name: str, **kwargs):
+        if tool_name not in self.tools:
+            return f"Error: Tool '{tool_name}' not found"
         try:
-            return self.tools[name].execute(**kwargs)
+            return self.tools[tool_name].execute(**kwargs)
         except Exception as e:
             return f"Error: {e}"

@@ -33,7 +33,7 @@ class GrepFile(FileTool):
         }
 
     def _print_call(self, **kwargs):
-        print(f"  {TAG}[{self.name}]{RESET} {kwargs.get('pattern', '')}")
+        print(f"{TAG}[{self.name}]{RESET} {kwargs.get('pattern', '')}")
 
     def execute(self, **kwargs) -> str:
         pattern = kwargs.get("pattern")
