@@ -1,5 +1,8 @@
 import os
+import re
 import subprocess
+from enum import Enum
+from pathlib import Path
 
 from agent.tools.base import Tool
 
@@ -37,9 +40,12 @@ class TerminalTool(Tool):
         r"reboot",
     ]
 
-    def __init__(self, workdir: str, timeout: int | None = 60):
-        self.workdir = os.path.realpath(workdir)
+    def __init__(self, workdir: str = ".", timeout: int | None = 60, max_output: int = 5000,
+                 confirm_require: bool = True):
+        self.workdir = Path(workdir).resolve()
         self.timeout = timeout
+        self.max_output = max_output
+        self.confirm_require = confirm_require
 
     @property
     def name(self) -> str:
@@ -71,6 +77,17 @@ class TerminalTool(Tool):
         command = kwargs.get("command")
         timeout = kwargs.get("timeout", self.timeout)
         self._print_call(**kwargs)
+
+        safety = self._validate(command)
+        if safety == CommandSafety.BLOCKED:
+            return f"命令被禁止执行： {command}\n 该命令可能造出不可逆的损害"
+        if safety == CommandSafety.NEEDS_CONFIRM and self.confirm_require:
+            confirm = input(f"\n⚠️  确认执行命令: {command}\n输入 'y' 确认: ").strip().lower()
+            if confirm != 'y':
+                return "用户拒绝执行该命令"
+        return self._execute(command, timeout)
+
+    def _execute(self, command: str | None, timeout: int | None) -> str:
         try:
             res = subprocess.run(
                 command, shell=True, timeout=timeout,
@@ -92,3 +109,20 @@ class TerminalTool(Tool):
             result = f"exit_code: {res.returncode}, output: {output}"
         self._print_result(result)
         return result
+
+    def _validate(self, command):
+        for pattern in self.BLOCKED_PATTERNS:
+            if re.search(pattern, command):
+                return CommandSafety.BLOCKED
+
+        for pattern in self.AUTO_APPROVE_PATTERNS:
+            if re.search(pattern, command):
+                return CommandSafety.AUTO_APPROVE
+
+        return CommandSafety.NEEDS_CONFIRM
+
+
+class CommandSafety(Enum):
+    BLOCKED = "blocked",
+    NEEDS_CONFIRM = "needs_confirm",
+    AUTO_APPROVE = "auto_approve"
