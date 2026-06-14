@@ -1,0 +1,74 @@
+[
+  {
+    "id": "0ae9662c",
+    "name": "审查核心模块 (__init__.py, __main__.py, client.py, core.py, data.py)",
+    "status": "completed",
+    "started_at": "2026-06-14T18:25:00.139782",
+    "duration": 28.447853,
+    "result": "审查完成：发现1个CRITICAL（__main__.py入口无效）、1个WARNING（空响应无兜底）、4个INFO"
+  },
+  {
+    "id": "3cf6f4aa",
+    "name": "审查 llm 模块 (base.py)",
+    "status": "completed",
+    "started_at": "2026-06-14T18:25:36.621225",
+    "duration": 5.9245,
+    "result": "审查完成：发现2个WARNING（缺少API错误处理、空choices检查）、2个INFO"
+  },
+  {
+    "id": "a09f29dd",
+    "name": "审查 tools 基础模块 (base.py, registry.py)",
+    "status": "completed",
+    "started_at": "2026-06-14T18:25:44.411591",
+    "duration": 7.742233,
+    "result": "审查完成：1个WARNING（错误处理不一致）、3个INFO"
+  },
+  {
+    "id": "89595f59",
+    "name": "审查 tools/file 模块 (6个文件)",
+    "status": "completed",
+    "started_at": "2026-06-14T18:25:55.011343",
+    "duration": 14.604184,
+    "result": "审查完成：发现1个CRITICAL（glob.py未使用root_dir验证路径绕过沙箱）、1个WARNING、2个INFO"
+  },
+  {
+    "id": "ae55901a",
+    "name": "审查 tools/bash 模块 (terminal.py)",
+    "status": "completed",
+    "started_at": "2026-06-14T18:26:11.706636",
+    "duration": 11.375615,
+    "result": "审查完成：发现1个CRITICAL（shell=True+绕过风险）、2个WARNING、2个INFO"
+  },
+  {
+    "id": "1bc021fc",
+    "name": "审查 tools/planning 模块 (4个文件)",
+    "status": "completed",
+    "started_at": "2026-06-14T18:26:25.591718",
+    "duration": 9.657712,
+    "result": "审查完成：发现2个WARNING（from_dict健壮性、add_tasks参数类型验证）、3个INFO"
+  },
+  {
+    "id": "0b22e8b8",
+    "name": "审查 tools/skills 模块 (3个文件)",
+    "status": "completed",
+    "started_at": "2026-06-14T18:26:37.654670",
+    "duration": 6.567602,
+    "result": "审查完成：整体良好，2个INFO（_load_errors未暴露、print代替日志）"
+  },
+  {
+    "id": "5f6817e6",
+    "name": "审查 tools/web 模块 (fetch.py)",
+    "status": "completed",
+    "started_at": "2026-06-14T18:26:46.140943",
+    "duration": 7.137384,
+    "result": "审查完成：发现1个CRITICAL（SSRF风险，缺少内网地址过滤）、2个INFO"
+  },
+  {
+    "id": "4827aa10",
+    "name": "审查 tools/mcp 模块 (3个文件)",
+    "status": "in_progress",
+    "started_at": "2026-06-14T18:26:55.515014",
+    "duration": null,
+    "result": null
+  }
+]
