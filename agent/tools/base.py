@@ -1,23 +1,20 @@
 from abc import abstractmethod, ABC
 
-TAG = "\033[44m"
+TAG = "\033[48;5;67m"
 RESET = "\033[0m"
 MAX_RESULT_LEN = 200
 
 
 class Tool(ABC):
-
     @property
     @abstractmethod
     def name(self) -> str:
         pass
 
-
     @property
     @abstractmethod
     def description(self) -> str:
         pass
-
 
     @property
     @abstractmethod
@@ -42,7 +39,7 @@ class Tool(ABC):
         display = result[:MAX_RESULT_LEN]
         if len(result) > MAX_RESULT_LEN:
             display += "..."
-        print(f"  {TAG}[{self.name} result]{RESET} {display}")
+        print(f"{TAG}[{self.name} result]{RESET} {display}")
 
     @abstractmethod
     def execute(self, **kwargs) -> str:

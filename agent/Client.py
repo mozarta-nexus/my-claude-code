@@ -2,10 +2,14 @@ import os
 
 from agent.Agent import Agent
 from agent.llm.base import LLMClient
+from agent.tools.bash.terminal import TerminalTool
+from agent.tools.file.edit import EditFile
 from agent.tools.file.glob import GlobFile
+from agent.tools.file.grep import GrepFile
 from agent.tools.file.read import ReadFile
 from agent.tools.file.write import WriteFile
 from agent.tools.registry import ToolRegistry
+from agent.tools.web.fetch import WebFetch
 
 WORK_DIR = os.getcwd()
 SYSTEM = f"""
@@ -17,10 +21,14 @@ if __name__ == '__main__':
     tool_registry = ToolRegistry()
     tool_registry.register(ReadFile(root_dir=WORK_DIR))
     tool_registry.register(WriteFile(root_dir=WORK_DIR))
+    tool_registry.register(EditFile(root_dir=WORK_DIR))
     tool_registry.register(GlobFile(root_dir=WORK_DIR))
+    tool_registry.register(GrepFile(root_dir=WORK_DIR))
+    tool_registry.register(WebFetch())
+    tool_registry.register(TerminalTool(workdir=WORK_DIR))
 
     client = LLMClient()
-    agent = Agent(client=client, system_prompt=SYSTEM,tool_registry=tool_registry)
+    agent = Agent(client=client, system_prompt=SYSTEM, tool_registry=tool_registry)
 
     while True:
         user_input = input("User> ")
@@ -29,5 +37,5 @@ if __name__ == '__main__':
         if user_input.strip().lower() in ("exit", "quit", "q"):
             print("Bye!")
             break
-        res= agent.run(user_input)
+        res = agent.run(user_input)
         print(f"AI> {res}")
