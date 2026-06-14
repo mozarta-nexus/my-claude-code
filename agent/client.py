@@ -1,7 +1,14 @@
 import asyncio
 import os
 
+from rich.console import Console
+from rich.live import Live
+from rich.markdown import Markdown
+from rich.panel import Panel
+from rich.spinner import Spinner
+
 from agent.core import Agent
+from agent.events import ThinkingEvent, StreamEvent, ToolCallEvent, ToolResultEvent
 from agent.llm.base import LLMClient
 from agent.tools.bash.terminal import TerminalTool
 from agent.tools.file.edit import EditFile
@@ -19,6 +26,62 @@ from agent.tools.registry import ToolRegistry
 from agent.tools.skills.load_skill import LoadSkill
 from agent.tools.skills.skills import SkillsManager
 from agent.tools.web.fetch import WebFetch
+
+console = Console()
+
+
+class Renderer:
+    def __init__(self):
+        self._live: Live | None = None
+        self._content_buffer = ""
+
+    def on_thinking(self, event: ThinkingEvent):
+        self._flush_live()
+        self._live = Live(Spinner("dots", text="思考中..."), console=console, vertical_overflow="visible")
+        self._live.start()
+
+    def on_stream(self, event: StreamEvent):
+        self._content_buffer += event.token
+        if self._live is None:
+            self._live = Live(Markdown(self._content_buffer), console=console, vertical_overflow="visible")
+            self._live.start()
+        else:
+            self._live.update(Markdown(self._content_buffer))
+
+    def on_tool_call(self, event: ToolCallEvent):
+        self._flush_live()
+        args_lines = []
+        for k, v in event.arguments.items():
+            args_lines.append(f" {k} = {v!r}")
+        args_text = "\n".join(args_lines) if args_lines else " (无参数)"
+        console.print(Panel(
+            args_text,
+            title=f"🔧 {event.name}",
+            border_style="blue",
+            padding=(0, 2),
+        ))
+
+    def on_tool_result(self, event: ToolResultEvent):
+        self._flush_live()
+        display = event.result[:500]
+        if len(event.result) > 500:
+            display += "\n..."
+        console.print(Panel(
+            display,
+            title=f"✅ {event.name} ({event.duration:.2f}s)",
+            border_style="green",
+            padding=(0, 2),
+        ))
+
+    def _flush_live(self):
+        if self._live:
+            self._live.stop()
+            self._live = None
+            self._content_buffer = ""
+
+    def flush(self):
+        self._flush_live()
+
 
 WORK_DIR = os.getcwd()
 SYSTEM_PROMPT = f"""你叫小帅，是一个AI编程助手，工作在{WORK_DIR}
@@ -86,6 +149,8 @@ async def chat():
     mcp_manager = await setup_mcp(registry)
     skills_manager = setup_skills(registry)
 
+    renderer = Renderer()
+
     agent = Agent(
         client=LLMClient(),
         system_prompt=build_system_prompt(skills_manager),
@@ -98,9 +163,18 @@ async def chat():
             if not user_input:
                 continue
             if user_input.strip().lower() in EXIT_COMMANDS:
-                print("Bye!")
+                console.print("[dim]Bye![/dim]")
                 break
-            print(f"AI> {agent.run(user_input)}")
+            for event in agent.run(user_input):
+                if isinstance(event,ThinkingEvent):
+                    renderer.on_thinking(event)
+                elif isinstance(event,StreamEvent):
+                    renderer.on_stream(event)
+                elif isinstance(event,ToolCallEvent):
+                    renderer.on_tool_call(event)
+                elif isinstance(event,ToolResultEvent):
+                    renderer.on_tool_result(event)
+                renderer.flush()
     finally:
         if mcp_manager:
             await mcp_manager.shutdown()
