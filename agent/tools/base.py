@@ -33,7 +33,7 @@ class Tool(ABC):
 
     def _print_call(self, **kwargs):
         args_str = " ".join(str(v) for v in kwargs.values())
-        print(f"  {TAG}[{self.name}]{RESET} {args_str}")
+        print(f"{TAG}[{self.name}]{RESET} {args_str}")
 
     def _print_result(self, result: str):
         display = result[:MAX_RESULT_LEN]
